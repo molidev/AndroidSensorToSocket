@@ -48,18 +48,32 @@ public class ReadingSensors extends IntentService implements SensorEventListener
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.i("Reading sensor", "Prueba desde el servicio");
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-
 
         if (mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) {
             mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         } else {
-            Log.i("ReadingSensors","No se ha detecttado sensor de acelerómetro en este dispositivo");
+            Log.i("uclm_sensors", "We can´t detect any accelerometer sensor\n");
         }
         mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
 
-        new Thread(new ClientThread()).start();//Thread para el websocket
+        new Thread(new ClientThread()).start();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mSensorManager.unregisterListener(this);
+        try {
+            if (outputStream != null) {
+                outputStream.close();
+            }
+            if (socket != null) {
+                socket.close();
+            }
+        } catch (IOException e) {
+            Log.i("uclm_sensors", "There's an issue with closing the socket\n");
+        }
     }
 
     @Override
@@ -81,7 +95,6 @@ public class ReadingSensors extends IntentService implements SensorEventListener
             }
             contador = 0;
         }
-
     }
 
     public void sendInformationToSocket(final String message){
@@ -92,7 +105,7 @@ public class ReadingSensors extends IntentService implements SensorEventListener
                     outputStream.write(message.getBytes());
                     outputStream.flush();
                 } else {
-                    Log.e("ReadingSensors", "Socket is null or closed");
+                    Log.e("uclm_sensors", "Socket is null or closed");
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -102,7 +115,6 @@ public class ReadingSensors extends IntentService implements SensorEventListener
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        // Handle accuracy changes here
     }
 
     public class LocalBinder extends Binder {
@@ -117,13 +129,11 @@ public class ReadingSensors extends IntentService implements SensorEventListener
             try {
                 InetAddress serverAddr = InetAddress.getByName(SERVER_IP);
                 socket = new Socket(serverAddr, SERVERPORT);
-            } catch (UnknownHostException e1) {
-                e1.printStackTrace();
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
-
         }
-
     }
+
+
 }
