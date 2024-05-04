@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">UCLM24SENSOR</string>
+    <string name="txtInicio">Bienvenid@ a la aplicación, al pulsar el botón <b>start</b> recibirás en tu <b>socket</b> la información del acelerómetro.</string>
+    <string name="btStart">Start</string>
+    <string name="btStop">Stop</string>
+    <string name="txtDev"><b>Luis Molina Muñoz - Torrero</b></string>
+    <string name="txtInfo">En estos momentos la información del <b>acelerómetro</b> está siendo enviada al <b>socket</b> que está escuchando por defecto en el puerto <b>5000</b>.</string>
 </resources>
