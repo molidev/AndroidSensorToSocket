@@ -18,7 +18,7 @@ def handle_client(client_socket, addr):
             print(f"Conexión perdida con {client_id}")
             break
 
-    print(f"Cerrando conexión con {client_id}")
+    print(f"Conexión cerrada con {client_id}")
     client_socket.close()
     client_dict.pop(client_id, None)
 

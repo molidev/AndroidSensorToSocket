@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">UCLM24SENSOR</string>
+    <string name="app_name">ToSocket</string>
     <string name="txtInicio">Bienvenid@ a la aplicación, al pulsar el botón <b>start</b> recibirás en tu <b>socket</b> la información del acelerómetro.</string>
     <string name="btStart">Start</string>
     <string name="btStop">Stop</string>
