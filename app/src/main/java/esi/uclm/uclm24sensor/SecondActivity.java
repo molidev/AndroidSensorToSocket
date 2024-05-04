@@ -71,6 +71,9 @@ public class SecondActivity  extends AppCompatActivity {
 
             intent = new Intent(SecondActivity.this, MainActivity.class);
             startActivity(intent);
+            if(!mIsBound){
+                Log.i("uclm_sensors", "Service was stopped sucessfully");
+            }
         }
     }
 

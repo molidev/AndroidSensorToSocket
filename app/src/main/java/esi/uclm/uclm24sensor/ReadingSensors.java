@@ -16,18 +16,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
 
-/**
- * An {@link IntentService} subclass for handling asynchronous task requests in
- * a service on a separate handler thread.
- * <p>
- * <p>
- * TODO: Customize class - update intent actions, extra parameters and static
- * helper methods.
- */
 public class ReadingSensors extends IntentService implements SensorEventListener {
 
     private SensorManager mSensorManager;
@@ -39,7 +28,7 @@ public class ReadingSensors extends IntentService implements SensorEventListener
 
     private OutputStream outputStream;
     private long lastUpdateTime = 0;
-    private int contador;
+    private int dataObtained;
 
     public ReadingSensors() {
         super("ReadingSensors");
@@ -83,17 +72,18 @@ public class ReadingSensors extends IntentService implements SensorEventListener
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        contador++;
-        if (contador == 300){
+        dataObtained++;
+        if (dataObtained == 10){
             if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
                 long currentTime = System.currentTimeMillis();
                 if (currentTime - lastUpdateTime > 10000) {
                     lastUpdateTime = currentTime;
                     String message = "Accelerometer data - X: " + event.values[0] + ", Y: " + event.values[1] + ", Z: " + event.values[2]+ "\n";
+                    Log.i("uclm_sensors", "[Data obtained] --> " + message + "\n");
                     sendInformationToSocket(message);
                 }
             }
-            contador = 0;
+            dataObtained = 0;
         }
     }
 
@@ -105,10 +95,10 @@ public class ReadingSensors extends IntentService implements SensorEventListener
                     outputStream.write(message.getBytes());
                     outputStream.flush();
                 } else {
-                    Log.e("uclm_sensors", "Socket is null or closed");
+                    Log.i("uclm_sensors", "Socket is null or closed");
                 }
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                Log.i("uclm_sensors", "There is one exception on method sendInformationToSocket: " + e.getMessage() + "\n");
             }
         }).start();
     }
@@ -130,7 +120,7 @@ public class ReadingSensors extends IntentService implements SensorEventListener
                 InetAddress serverAddr = InetAddress.getByName(SERVER_IP);
                 socket = new Socket(serverAddr, SERVERPORT);
             } catch (IOException e1) {
-                e1.printStackTrace();
+                Log.i("uclm_sensors", "There is one exception on ClientThread: " + e1.getMessage() + "\n");
             }
         }
     }
